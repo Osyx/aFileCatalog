@@ -1,4 +1,4 @@
 package server.model;
 
-public class Model {
+public class User {
 }
