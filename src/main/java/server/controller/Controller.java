@@ -1,36 +1,66 @@
 package server.controller;
 
+import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import common.Hello;
+import common.UserError;
 
-public class Controller implements Hello {
+import common.*;
+import server.model.User;
+import server.model.UserManager;
+import sun.rmi.runtime.Log;
 
-    public Controller() {}
+public class Controller extends UnicastRemoteObject implements ServerReacher {
 
-    public String sayHello() {
-        return "Hello, world!";
+    private final UserManager userManager = new UserManager();
+
+    public Controller() throws RemoteException {}
+
+    @Override
+    public String logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError{
+    return "logged in";
     }
 
-    public static void main(String args[]) {
+    @Override
+    public void logOut(LogInDetails lgn){
 
-        try {
-            Controller obj = new Controller();
-            obj.startRegistry();
-           // Hello stub = (Hello) UnicastRemoteObject.exportObject(obj, 0);
-
-            // Bind the remote object's stub in the registry
-            Registry registry = LocateRegistry.getRegistry();
-           // registry.bind("Hello", stub);
-
-            System.err.println("Server ready");
-        } catch (Exception e) {
-            System.err.println("Server exception: " + e.toString());
-            e.printStackTrace();
-        }
     }
+
+    @Override
+    public void register(ClientReacher remoteObject, LogInDetails lgn) throws UserError{
+        userManager.createUser(remoteObject, lgn);
+    }
+
+    @Override
+    public void unRegister(LogInDetails lid ) throws UserError {
+
+    }
+    @Override
+    public void fileUpload(File file,LogInDetails lid ) throws FileError{
+
+    }
+
+    @Override
+    public File fileDownload(String fileName, LogInDetails lgn) throws FileError, UserError {
+        return new File("at.txt");
+    }
+
+    @Override
+    public void setNotification(boolean notify, String file, LogInDetails lid) throws FileError, UserError {
+
+    }
+
+    public void deleteFile(String file, LogInDetails lid ) throws FileError, UserError {
+
+    }
+
+    public void setPrivate(boolean priv, LogInDetails lid ) throws UserError {
+
+    }
+
+
 
     private void startRegistry() throws RemoteException {
         try {
