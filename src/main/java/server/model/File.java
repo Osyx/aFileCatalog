@@ -31,11 +31,19 @@ import javax.persistence.*;
         ),
 
         @NamedQuery(
+                name = "freeFindAllFilesAvailable",
+                query = "SELECT file FROM files file " +
+                        "WHERE file.privateAccess = FALSE",
+                lockMode = LockModeType.OPTIMISTIC
+        ),
+
+        @NamedQuery(
                 name = "updateFile",
                 query = "UPDATE files file SET file.content = :file " +
                         "WHERE file.name = :fileName " +
                         "AND file.owner.username = :username " +
-                        "AND file.owner.password = :password",
+                        "AND file.owner.password = :password " +
+                        "AND file.writePermission <> FALSE",
                 lockMode = LockModeType.OPTIMISTIC
         )
 })
@@ -113,7 +121,7 @@ public class File implements FileDTO {
     public String toString() {
         return "File: [" +
                 "File name: " + name +
-                ", owner: " + owner.getName() +
+                ", owner: " + owner +
                 ", size: " + fileSize +
                 ", is private: " + privateAccess +
                 ", can write: " + writePermission +
