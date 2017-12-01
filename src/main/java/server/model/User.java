@@ -16,6 +16,12 @@ import javax.persistence.*;
                 query = "SELECT user FROM users user WHERE user.username LIKE :username",
                 lockMode = LockModeType.OPTIMISTIC
         )
+        ,
+        @NamedQuery(
+                name = "loginUser",
+                query = "SELECT user FROM users user WHERE user.username LIKE :username AND user.password LIKE :password",
+                lockMode = LockModeType.OPTIMISTIC
+        )
 })
 
 
@@ -35,7 +41,7 @@ public class User implements Serializable{
         this.password = password;
     }
 
-    public String getName() {
+    public String getUsername() {
         return username;
     }
 
