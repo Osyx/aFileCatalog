@@ -1,16 +1,22 @@
 package client.view;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
 import common.ClientReacher;
+import common.LogInDetails;
+import common.ServerReacher;
 
 public class View implements Runnable{
+    private ServerReacher server;
     private boolean receiving = false;
     private final ClientReacher remoteObject;
-    public boolean stillReceiving = false;
-    private String userName = "";
+    private LogInDetails userLID;
 
     private final String HELP_MESSAGE = "help";
     private final String EXIT_MESSAGE = "exit";
@@ -54,42 +60,68 @@ public class View implements Runnable{
                         break;
                     case LOGIN_MESSAGE:
                         System.out.println("Insert username and password.");
-                        // LogInDetails lid = new LogInDetails(sc.next(), sc.next);
-                        // userName = logIn(remoteObj, lid);
+                        LogInDetails lid = new LogInDetails(sc.next(), sc.next());
+                        server.logIn(remoteObject, lid);
+                        userLID = lid;
+                        System.out.println("Logged in as " + userLID.getUsername());
                         break;
                     case LOGOUT_MESSAGE:
-                        if(userName == ""){
+                        if(userLID == null){
                             System.out.println("Unable to log out.");
                         }else{
                             System.out.print("Logging out...");
-                            //logOut(userName);
+                            server.logOut(userLID);
                             System.out.println("done");
                         }
                         break;
                     case REGISTER_MESSAGE:
                         System.out.println("Insert wanted username and password.");
-
+                        LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
+                        //userLID = server.register(remoteObject, lidR);
+                        System.out.println("Logged in as " + userLID);
                         break;
                     case UNREGISTER_MESSAGE:
-                        System.out.println("UNREGISTER MESSAGE...");
+                        if(userLID != null){
+                            System.out.println("Are you sure you want to unregister?");
+                            if(sc.next().equals("yes")){
+                                System.out.println(userLID + " is no longer registered.");
+                            }
+                        }
+                        else{
+                            System.out.println("You have to log in first.");
+                        }
                         break;
                     case UPLOAD_MESSAGE:
-                        System.out.println("UPLOAD MESSAGE...");
+                        System.out.println("Enter file to upload");
+                        File file = new File(sc.next());
+                        server.fileUpload(file, userLID);
+                        System.out.println("Do you want the file to be public?");
+                        if(sc.next().equals("yes")){
+                            server.setPrivate(false, userLID);
+                        }
+
                         break;
                     case DOWNLOAD_MESSAGE:
-                        System.out.println("DOWNLOAD MESSAGE...");
+                        System.out.println("Enter file to download");
+                        server.fileDownload(sc.next(), userLID);
                         break;
                     case LIST_MESSAGE:
                         System.out.println("LIST MESSAGE...");
                         break;
                     case DELETE_MESSAGE:
-                        System.out.println("DELETE MESSAGE...");
+                        System.out.println("Enter file to delete");
+                        server.deleteFile(sc.next(), userLID);
                         break;
                     case UPDATE_MESSAGE:
-                        System.out.println("UPDATE MESSAGE...");
+                        System.out.println("Enter file to update");
+                        String update = sc.next();
+                        File updatefile = new File(update);
+                        server.deleteFile(update, userLID);
+                        server.fileUpload(updatefile, userLID);
                         break;
                     case NOTIFY_MESSAGE:
-                        System.out.println("NOTIFY MESSAGE...");
+                        System.out.println("Enter file to enable notification for");
+                        server.setNotification(true, sc.next(), userLID);
                         break;
                     default:
                         //System.out.println("Wrong message syntax: " + input + ". Type help for help.");
@@ -111,6 +143,11 @@ public class View implements Runnable{
         public void recvMsg(String message) {
 
         }
+    }
+
+    private void lookupServer(String host) throws NotBoundException, MalformedURLException,
+            RemoteException {
+                server = (ServerReacher) Naming.lookup("//" + host + "/" + ServerReacher.NAME_OF_SERVER);
     }
 }
 
