@@ -11,6 +11,7 @@ import java.util.Scanner;
 import common.ClientReacher;
 import common.LogInDetails;
 import common.ServerReacher;
+import common.UserError;
 
 public class View implements Runnable{
     private ServerReacher server;
@@ -71,21 +72,29 @@ public class View implements Runnable{
                         }else{
                             System.out.print("Logging out...");
                             server.logOut(userLID);
+                            userLID = null;
                             System.out.println("done");
                         }
                         break;
                     case REGISTER_MESSAGE:
-                        System.out.println("Insert wanted username and password.");
-                        LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
-                        //userLID = server.register(remoteObject, lidR);
-                        System.out.println("Logged in as " + userLID);
+                        try{
+                            System.out.println("Insert wanted username and password.");
+                            LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
+                            server.register(remoteObject, lidR);
+                            userLID = lidR;
+                            System.out.println("Logged in as " + userLID);
+                        }catch(UserError ue){
+                            System.out.println("Username already taken");
+                        }
                         break;
                     case UNREGISTER_MESSAGE:
                         if(userLID != null){
                             System.out.println("Are you sure you want to unregister?");
                             if(sc.next().equals("yes")){
-                                System.out.println(userLID + " is no longer registered.");
+                                server.unRegister(userLID);
+                                userLID = null;
                             }
+                            System.out.println("You are now  no longer registered");
                         }
                         else{
                             System.out.println("You have to log in first.");
@@ -99,11 +108,13 @@ public class View implements Runnable{
                         if(sc.next().equals("yes")){
                             server.setPrivate(false, userLID);
                         }
+                        System.out.println("File uploaded");
 
                         break;
                     case DOWNLOAD_MESSAGE:
                         System.out.println("Enter file to download");
                         server.fileDownload(sc.next(), userLID);
+                        System.out.println("File downloaded");
                         break;
                     case LIST_MESSAGE:
                         System.out.println("LIST MESSAGE...");
@@ -111,6 +122,7 @@ public class View implements Runnable{
                     case DELETE_MESSAGE:
                         System.out.println("Enter file to delete");
                         server.deleteFile(sc.next(), userLID);
+                        System.out.println("File deleted");
                         break;
                     case UPDATE_MESSAGE:
                         System.out.println("Enter file to update");
@@ -118,10 +130,12 @@ public class View implements Runnable{
                         File updatefile = new File(update);
                         server.deleteFile(update, userLID);
                         server.fileUpload(updatefile, userLID);
+                        System.out.println("File updated");
                         break;
                     case NOTIFY_MESSAGE:
                         System.out.println("Enter file to enable notification for");
                         server.setNotification(true, sc.next(), userLID);
+                        System.out.println("Notification enabled");
                         break;
                     default:
                         //System.out.println("Wrong message syntax: " + input + ". Type help for help.");
