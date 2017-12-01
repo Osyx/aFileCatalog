@@ -12,10 +12,6 @@ import javax.persistence.Version;
 @Entity(name = "User")
 public class User implements Serializable{
     @Id
-    @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long accountId;
-
     @Column(name = "username", nullable = false)
     private String username;
 
