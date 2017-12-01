@@ -8,6 +8,7 @@ import server.model.File;
 import server.model.User;
 
 import javax.persistence.*;
+import java.util.List;
 
 public class FileDAO {
     private final EntityManagerFactory factory;
@@ -66,6 +67,41 @@ public class FileDAO {
         }
     }
 
+    public void deleteUser(User user) {
+        try {
+            EntityManager em = beginTransaction();
+            TypedQuery query = em.createNamedQuery("deleteUser", User.class);
+            query.setParameter("username", user.getUsername());
+            query.setParameter("password", user.getPassword());
+            query.executeUpdate();
+            em.detach(user);
+        } finally {
+            commitTransaction();
+        }
+    }
+
+    public User checkLogin(LogInDetails logInDetails) throws UserError {
+        User user;
+        try {
+            EntityManager em = beginTransaction();
+            try {
+                TypedQuery query = em.createNamedQuery("loginUser", User.class);
+                query.setParameter("username", logInDetails.getUsername());
+                query.setParameter("password", logInDetails.getPassword());
+                user = (User) query.getSingleResult();
+            } catch (NoResultException noSuchAccount) {
+                throw new UserError("Wrong login details!");
+            }
+        } finally {
+            commitTransaction();
+        }
+        return user;
+    }
+
+    public List<File> listFiles(User user) {
+        if(user == null)
+    }
+
     private User searchUser(String username) throws UserError {
         if (username == null) {
             throw new UserError("No username entered...");
@@ -82,36 +118,4 @@ public class FileDAO {
             commitTransaction();
         }
     }
-
-    void deleteUser(User user) {
-        try {
-            EntityManager em = beginTransaction();
-            TypedQuery query = em.createNamedQuery("deleteUser", User.class);
-            query.setParameter("username", user.getUsername());
-            query.setParameter("password", user.getPassword());
-            query.executeUpdate();
-            em.detach(user);
-        } finally {
-            commitTransaction();
-        }
-    }
-
-    User checkLogin(LogInDetails logInDetails) throws UserError {
-        try {
-            EntityManager em = beginTransaction();
-            try {
-                TypedQuery query = em.createNamedQuery("loginUser", User.class);
-                query.setParameter("username", logInDetails.getUsername());
-                query.setParameter("password", logInDetails.getPassword());
-                User user = query.getSingleResult();
-            } catch (NoResultException noSuchAccount) {
-                throw new UserError("Wrong login details!");
-            }
-        } finally {
-            commitTransaction();
-        }
-        return
-    }
-
-
 }
