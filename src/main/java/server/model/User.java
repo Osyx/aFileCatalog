@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Version;
 
 
-@Entity(name = "User")
+@Entity(name = "users")
 public class User implements Serializable{
     @Id
     @Column(name = "username", nullable = false)
@@ -17,10 +17,6 @@ public class User implements Serializable{
 
     @Column(name = "password", nullable = false)
     private String password;
-
-    @Version
-    @Column(name = "OPTLOCK")
-    private int versionNum;
 
     public User() {
         this(null);
