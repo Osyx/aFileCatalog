@@ -1,18 +1,40 @@
 package server.controller;
 
+import java.io.File;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import common.ClientReacher;
 import common.Hello;
+import common.LogInDetails;
+import common.ServerReacher;
 
-public class Controller implements Hello {
+public class Controller extends UnicastRemoteObject implements ServerReacher {
 
-    public Controller() {}
+    public Controller() throws RemoteException {}
 
-    public String sayHello() {
-        return "Hello, world!";
+    @Override
+    String logIn(ClientReacher remoteObject, LogInDetails lid ){
+    return "";
     }
+
+    public void logOut(String username);
+
+    void register(ClientReacher remoteObject, LogInDetails);
+
+    void unRegister(String username);
+
+    void fileUpload(File file, String useranem);
+
+    File fileDownload(String username);
+
+    void setNotification(boolean notify, String file, String username);
+
+    void deleteFile(String file, String username);
+
+    void setPrivate(boolean priv, String username);
 
     public static void main(String args[]) {
 
