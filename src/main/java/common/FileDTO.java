@@ -12,7 +12,7 @@ public interface FileDTO extends Serializable {
 
     long getFileSize();
 
-    User getOwner();
+    String getOwner();
 
     boolean isPrivateAccess();
 
