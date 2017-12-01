@@ -8,18 +8,18 @@ import javax.persistence.*;
 @NamedQueries({
         @NamedQuery(
                 name = "deleteFile",
-                query = "DELETE FROM files WHERE files.name LIKE :fileName AND files.owner.username LIKE :ownerName"
+                query = "DELETE FROM files file WHERE file.name LIKE :fileName AND file.owner.username LIKE :ownerName"
         )
         ,
         @NamedQuery(
                 name = "findOwnedFiles",
-                query = "SELECT name, fileSize, owner, privateAccess, writePermission FROM files WHERE files.owner.username LIKE :ownerName",
+                query = "SELECT file FROM files file WHERE file.owner.username LIKE :ownerName",
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
         @NamedQuery(
                 name = "findAllFilesAvailable",
-                query = "SELECT name, fileSize, owner, privateAccess, writePermission FROM files WHERE (files.privateAccess = TRUE AND files.owner.username NOT LIKE :ownerName)",
+                query = "SELECT file FROM files file WHERE (file.privateAccess = TRUE AND file.owner.username NOT LIKE :ownerName)",
                 lockMode = LockModeType.OPTIMISTIC
         )
 })
@@ -33,7 +33,8 @@ public class File implements FileDTO {
     @Column(name = "size", nullable = false)
     private long fileSize;
 
-    @Column(name = "owner", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner", nullable = false)
     private User owner;
 
     @Column(name = "privateAccess", nullable = false)
@@ -106,19 +107,17 @@ public class File implements FileDTO {
      */
     @Override
     public String toString() {
-        StringBuilder stringRepresentation = new StringBuilder();
-        stringRepresentation.append("File: [");
-        stringRepresentation.append("File name: ");
-        stringRepresentation.append(name);
-        stringRepresentation.append(", owner: ");
-        stringRepresentation.append(owner.getName());
-        stringRepresentation.append(", size: ");
-        stringRepresentation.append(fileSize);
-        stringRepresentation.append(", is private: ");
-        stringRepresentation.append(privateAccess);
-        stringRepresentation.append(", can write: ");
-        stringRepresentation.append(writePermission);
-        stringRepresentation.append("]");
-        return stringRepresentation.toString();
+        return "File: [" +
+                "File name: " +
+                name +
+                ", owner: " +
+                owner.getName() +
+                ", size: " +
+                fileSize +
+                ", is private: " +
+                privateAccess +
+                ", can write: " +
+                writePermission +
+                "]";
     }
 }
