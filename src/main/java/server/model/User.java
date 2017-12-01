@@ -1,12 +1,22 @@
 package server.model;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import javax.persistence.*;
+
+
+
+@NamedQueries({
+        @NamedQuery(
+                name = "deleteUser",
+                query = "DELETE FROM users user WHERE user.username LIKE :username AND user.password LIKE :password"
+        )
+        ,
+        @NamedQuery(
+                name = "checkUser",
+                query = "SELECT user FROM users user WHERE user.username LIKE :username",
+                lockMode = LockModeType.OPTIMISTIC
+        )
+})
 
 
 @Entity(name = "users")
@@ -18,9 +28,7 @@ public class User implements Serializable{
     @Column(name = "password", nullable = false)
     private String password;
 
-    public User() {
-        this(null);
-    }
+    public User() {}
 
     public User(String name, String password) {
         this.username = name;
