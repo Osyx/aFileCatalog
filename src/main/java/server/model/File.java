@@ -1,25 +1,41 @@
 package server.model;
 
 import common.FileDTO;
-import common.FileError;
 
 import javax.persistence.*;
 
 @NamedQueries({
         @NamedQuery(
                 name = "deleteFile",
-                query = "DELETE FROM files file WHERE file.name LIKE :fileName AND file.owner.username LIKE :ownerName"
+                query = "DELETE FROM files file " +
+                        "WHERE file.name LIKE :fileName " +
+                        "AND file.owner.username LIKE :username " +
+                        "AND file.owner.password LIKE :password"
         )
         ,
         @NamedQuery(
                 name = "findOwnedFiles",
-                query = "SELECT file FROM files file WHERE file.owner.username LIKE :ownerName",
+                query = "SELECT file FROM files file " +
+                        "WHERE file.owner.username LIKE :username " +
+                        "AND file.owner.password LIKE :password",
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
         @NamedQuery(
                 name = "findAllFilesAvailable",
-                query = "SELECT file FROM files file WHERE (file.privateAccess = TRUE AND file.owner.username NOT LIKE :ownerName)",
+                query = "SELECT file FROM files file " +
+                        "WHERE (file.privateAccess = FALSE " +
+                        "OR (file.owner.username LIKE :username " +
+                        "AND file.owner.password LIKE :password))",
+                lockMode = LockModeType.OPTIMISTIC
+        ),
+
+        @NamedQuery(
+                name = "updateFile",
+                query = "UPDATE files file SET file.content = :file " +
+                        "WHERE file.name = :fileName " +
+                        "AND file.owner.username = :username " +
+                        "AND file.owner.password = :password",
                 lockMode = LockModeType.OPTIMISTIC
         )
 })
@@ -46,9 +62,7 @@ public class File implements FileDTO {
     @Column(name = "content", nullable = false)
     private java.io.File content;
 
-    public File() {
-        this("new", new User("new"), new java.io.File("temp"));
-    }
+    public File() {}
 
     public File(String name, User user, java.io.File content) {
         this.name = name;
@@ -92,32 +106,17 @@ public class File implements FileDTO {
         return content;
     }
 
-    public void upload(java.io.File file) throws FileError {
-        if("Everything goes wrong".equals("Sorry"))
-            throw new FileError("Something went wrong during the upload...");
-    }
-
-    public void download(String fileName) throws FileError {
-        if("Everything goes wrong".equals("Sorry"))
-            throw new FileError("Something went wrong during the download...");
-    }
-
     /**
      * @return A string representation of all fields in this object.
      */
     @Override
     public String toString() {
         return "File: [" +
-                "File name: " +
-                name +
-                ", owner: " +
-                owner.getName() +
-                ", size: " +
-                fileSize +
-                ", is private: " +
-                privateAccess +
-                ", can write: " +
-                writePermission +
+                "File name: " + name +
+                ", owner: " + owner.getName() +
+                ", size: " + fileSize +
+                ", is private: " + privateAccess +
+                ", can write: " + writePermission +
                 "]";
     }
 }
