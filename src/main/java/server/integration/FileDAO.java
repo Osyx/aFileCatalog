@@ -99,7 +99,32 @@ public class FileDAO {
     }
 
     public List<File> listFiles(User user) {
-        if(user == null)
+        if(user == null){
+            try {
+                EntityManager em = beginTransaction();
+                try {
+                    return em.createNamedQuery("freeFindAllFilesAvailable", File.class).getResultList();
+                } catch (NoResultException noSuchAccount) {
+                    return null;
+                }
+            } finally {
+                commitTransaction();
+            }
+        }
+        try {
+            EntityManager em = beginTransaction();
+            try {
+                TypedQuery files = em.createNamedQuery("findAllFilesAvailable", File.class);
+                files.setParameter("username", user.getUsername());
+                files.setParameter("password", user.getPassword());
+                List<File> listofFiles = (List<File>) files.getResultList();
+                return listofFiles;
+            } catch (NoResultException noSuchAccount) {
+                return null;
+            }
+        } finally {
+            commitTransaction();
+        }
     }
 
     private User searchUser(String username) throws UserError {
