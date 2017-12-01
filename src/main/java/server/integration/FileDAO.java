@@ -1,10 +1,11 @@
 package server.integration;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.NoResultException;
-import javax.persistence.Persistence;
+import common.FileDTO;
+import common.FileError;
+import server.model.File;
+import sun.tools.asm.CatchData;
+
+import javax.persistence.*;
 
 public class FileDAO {
     private final EntityManagerFactory factory;
@@ -31,4 +32,31 @@ public class FileDAO {
     private void rollbackTransaction() {
 
     }
+
+
+    public void createFile(FileDTO file) throws FileError {
+        try {
+            EntityManager em = beginTransaction();
+            em.persist(file);
+        }catch (Exception e){
+            throw new FileError("Error creating file...");
+        }finally {
+            commitTransaction();
+        }
+    }
+
+    public void deleteFile(String username, String password) {
+        try {
+            EntityManager em = beginTransaction();
+            TypedQuery delFile = em.createNamedQuery("deleteFile", File.class);
+            delFile.setParameter("username", username);
+            delFile.setParameter("password", username);
+            delFile.executeUpdate();
+        } finally {
+            commitTransaction();
+        }
+    }
+
+
+
 }
