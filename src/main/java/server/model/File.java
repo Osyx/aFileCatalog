@@ -8,18 +8,18 @@ import javax.persistence.*;
 @NamedQueries({
         @NamedQuery(
                 name = "deleteFile",
-                query = "DELETE FROM files WHERE files.name LIKE :fileName AND files.owner LIKE :ownerName"
+                query = "DELETE FROM files file WHERE file.name LIKE :fileName AND file.owner.username LIKE :ownerName"
         )
         ,
         @NamedQuery(
                 name = "findOwnedFiles",
-                query = "SELECT name, fileSize, owner, privateAccess, writePermission FROM files WHERE files.owner LIKE :ownerName",
+                query = "SELECT file FROM files file WHERE file.owner.username LIKE :ownerName",
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
         @NamedQuery(
                 name = "findAllFilesAvailable",
-                query = "SELECT name, fileSize, owner, privateAccess, writePermission FROM files WHERE (files.privateAccess = TRUE AND files.owner NOT LIKE :ownerName)",
+                query = "SELECT file FROM files file WHERE (file.privateAccess = TRUE AND file.owner.username NOT LIKE :ownerName)",
                 lockMode = LockModeType.OPTIMISTIC
         )
 })
@@ -33,8 +33,9 @@ public class File implements FileDTO {
     @Column(name = "size", nullable = false)
     private long fileSize;
 
-    @Column(name = "owner", nullable = false)
-    private String owner;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "owner", nullable = false)
+    private User owner;
 
     @Column(name = "privateAccess", nullable = false)
     private boolean privateAccess;
@@ -52,7 +53,7 @@ public class File implements FileDTO {
     public File(String name, User user, java.io.File content) {
         this.name = name;
         this.fileSize = content.length();
-        this.owner = user.getName();
+        this.owner = user;
         this.privateAccess = true;
         this.writePermission = true;
         this.content = content;
@@ -61,7 +62,7 @@ public class File implements FileDTO {
     public File(String name, User user, boolean privateAccess, boolean writePermission, java.io.File content) {
         this.name = name;
         this.fileSize = content.length();
-        this.owner = user.getName();
+        this.owner = user;
         this.privateAccess = privateAccess;
         this.writePermission = writePermission;
         this.content = content;
@@ -75,7 +76,7 @@ public class File implements FileDTO {
         return fileSize;
     }
 
-    public String getOwner() {
+    public User getOwner() {
         return owner;
     }
 
@@ -110,7 +111,7 @@ public class File implements FileDTO {
                 "File name: " +
                 name +
                 ", owner: " +
-                owner +
+                owner.getName() +
                 ", size: " +
                 fileSize +
                 ", is private: " +
