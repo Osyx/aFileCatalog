@@ -35,7 +35,8 @@ import javax.persistence.*;
                 query = "UPDATE files file SET file.content = :file " +
                         "WHERE file.name = :fileName " +
                         "AND file.owner.username = :username " +
-                        "AND file.owner.password = :password",
+                        "AND file.owner.password = :password " +
+                        "AND file.writePermission <> FALSE",
                 lockMode = LockModeType.OPTIMISTIC
         )
 })
