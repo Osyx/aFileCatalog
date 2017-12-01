@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import common.ClientReacher;
 import common.LogInDetails;
 import common.ServerReacher;
@@ -46,8 +47,18 @@ public class View implements Runnable{
 
     @Override
     public void run(){
-        System.out.println("receiving commands...");
         Scanner sc = new Scanner(System.in);
+        System.out.println("Host?");
+        try{
+            lookupServer(sc.next());
+        }catch (NotBoundException nbe){
+            System.out.println("Not bound.");
+        }catch (MalformedURLException mue){
+            System.out.println("Malformed URL.");
+        }catch(RemoteException re){
+            System.out.println("Remote error.");
+        }
+        System.out.println("receiving commands...");
         while(receiving){
             try{
                 String input = sc.nextLine().toLowerCase();
