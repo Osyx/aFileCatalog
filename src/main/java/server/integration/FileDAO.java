@@ -11,7 +11,7 @@ public class FileDAO {
     private final ThreadLocal<EntityManager> entityManagerThreadLocal = new ThreadLocal<>();
 
     public FileDAO() {
-        factory = Persistence.createEntityManagerFactory("fileFactory");
+        factory = Persistence.createEntityManagerFactory("filePersistenceUnit");
     }
 
     private EntityManager beginTransaction() {
