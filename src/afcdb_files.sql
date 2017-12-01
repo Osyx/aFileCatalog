@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `files`;
 CREATE TABLE `files` (
   `name` varchar(45) NOT NULL,
   `size` bigint(45) NOT NULL,
-  `owner` blob NOT NULL,
+  `owner` varchar(45) NOT NULL,
   `privateAccess` tinyint(4) NOT NULL,
   `writePermission` tinyint(4) NOT NULL,
   `content` blob NOT NULL,

@@ -28,4 +28,7 @@ public class FileDAO {
         entityManagerThreadLocal.get().getTransaction().commit();
     }
 
+    private void rollbackTransaction() {
+
+    }
 }
