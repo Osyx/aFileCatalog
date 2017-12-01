@@ -10,31 +10,50 @@ import common.ClientReacher;
 import common.Hello;
 import common.LogInDetails;
 import common.ServerReacher;
+import server.model.UserManager;
 
 public class Controller extends UnicastRemoteObject implements ServerReacher {
+
+    private final UserManager userManager = new UserManager();
 
     public Controller() throws RemoteException {}
 
     @Override
-    String logIn(ClientReacher remoteObject, LogInDetails lid ){
-    return "";
+    public String logIn(ClientReacher remoteObject, LogInDetails lid ){
+    return "logged in";
     }
 
-    public void logOut(String username);
+    public void logOut(String username){
+            userManager
+    }
 
-    void register(ClientReacher remoteObject, LogInDetails);
+    public void register(ClientReacher remoteObject, LogInDetails){
 
-    void unRegister(String username);
+    }
 
-    void fileUpload(File file, String useranem);
+    public void unRegister(String username) {
 
-    File fileDownload(String username);
+    }
 
-    void setNotification(boolean notify, String file, String username);
+    public void fileUpload(File file, String username) {
 
-    void deleteFile(String file, String username);
+    }
 
-    void setPrivate(boolean priv, String username);
+    public File fileDownload(String username) {
+
+    }
+
+    public void setNotification(boolean notify, String file, String username) {
+
+    }
+
+    public void deleteFile(String file, String username) {
+
+    }
+
+    public void setPrivate(boolean priv, String username) {
+
+    }
 
     public static void main(String args[]) {
 
