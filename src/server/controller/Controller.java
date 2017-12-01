@@ -19,11 +19,11 @@ public class Controller implements Hello {
         try {
             Controller obj = new Controller();
             obj.startRegistry();
-            Hello stub = (Hello) UnicastRemoteObject.exportObject(obj, 0);
+           // Hello stub = (Hello) UnicastRemoteObject.exportObject(obj, 0);
 
             // Bind the remote object's stub in the registry
             Registry registry = LocateRegistry.getRegistry();
-            registry.bind("Hello", stub);
+           // registry.bind("Hello", stub);
 
             System.err.println("Server ready");
         } catch (Exception e) {
