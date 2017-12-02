@@ -36,10 +36,9 @@ public class FileDAO {
         try {
             EntityManager em = beginTransaction();
             em.persist(file);
+            commitTransaction();
         }catch (Exception e){
             throw new FileError("Error creating file...");
-        }finally {
-            commitTransaction();
         }
     }
 
@@ -61,15 +60,13 @@ public class FileDAO {
 
     public User createUser(LogInDetails logInDetails) throws UserError {
         User user;
-        try {
+
             if(searchUser(logInDetails.getUsername()) != null)
                 throw new UserError("Account already exists...");
             EntityManager em = beginTransaction();
             user = new User(logInDetails.getUsername(), logInDetails.getPassword());
             em.persist(user);
-        } finally {
             commitTransaction();
-        }
         return user;
     }
 

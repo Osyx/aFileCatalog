@@ -1,17 +1,19 @@
 package client.view;
 
-import common.ClientReacher;
-import common.LogInDetails;
-import common.ServerReacher;
-import common.UserError;
+import common.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class View implements Runnable{
     private ServerReacher server;
@@ -106,7 +108,9 @@ public class View implements Runnable{
                         }
                         break;
                     case UPLOAD_MESSAGE:
-                        System.out.println("Enter file to upload");
+                        String currentDir = System.getProperty("user.dir");
+                        System.out.println("Enter file to upload, you are in \"" + currentDir + "\" \nFiles available to upload are:");
+                        printFilesInDir(currentDir);
                         File file = new File(sc.next());
                         server.fileUpload(file, userLID);
                         System.out.println("Do you want the file to be public?");
@@ -147,8 +151,12 @@ public class View implements Runnable{
                         break;
                 }
 
-            }catch (Exception e){
-                System.out.println("Receiving failed.");
+            }catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (UserError userError) {
+                System.out.println(userError.getErrorMsg());
+            } catch (FileError fileError) {
+                System.out.println(fileError.getErrorMsg());
             }
         }
     }
@@ -171,6 +179,20 @@ public class View implements Runnable{
         } catch (NotBoundException | MalformedURLException | RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    private void printFilesInDir(String path) {
+        try (Stream<Path> paths = Files.list(Paths.get(path))) {
+            paths
+                    .filter(Files::isRegularFile)
+                    .forEach(this::printTabbed);
+        } catch (IOException e) {
+            System.out.println("Failed to print working dir.");
+        }
+    }
+
+    private void printTabbed(Path path) {
+        System.out.println("\t" + path);
     }
 }
 
