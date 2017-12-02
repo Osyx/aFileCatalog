@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 public class Controller extends UnicastRemoteObject implements ServerReacher {
 
@@ -19,7 +20,7 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     public Controller() throws RemoteException {}
 
     @Override
-    public String logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError, RemoteException {
+    public String logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError, RemoteException, FileError {
         this.remoteObject = remoteObject;
         this.user = fileDAO.checkLogin(lid);
         return user.getUsername();
@@ -32,13 +33,14 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     }
 
     @Override
-    public String register(LogInDetails lgn) throws UserError {
+    public String register(LogInDetails lgn, ClientReacher cr) throws UserError, FileError {
+        this.remoteObject = cr;
         user = fileDAO.createUser(lgn);
         return user.getUsername();
     }
 
     @Override
-    public void unRegister(LogInDetails lid) throws UserError {
+    public void unRegister(LogInDetails lid) throws UserError, FileError {
         if(!lid.getUsername().equals(user.getUsername()))
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         fileDAO.deleteUser(user);
@@ -46,7 +48,7 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
 
     @Override
     public void fileUpload(java.io.File file, LogInDetails lid) throws FileError, UserError {
-        if(!lid.getUsername().equals(user.getUsername()))
+        if(!lid.getUsername().equals(user.getUsername()) || user == null)
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         File serverFile = new File(file.getName(), user, file);
         fileDAO.createFile(serverFile);
@@ -54,15 +56,14 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
 
     @Override
     public void fileUpload(java.io.File file, boolean privateAccess, boolean writePermission, LogInDetails lid) throws FileError, UserError {
-        if(!lid.getUsername().equals(user.getUsername()))
+        if(!lid.getUsername().equals(user.getUsername()) || user == null)
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         File serverFile = new File(file.getName(), user, privateAccess, writePermission, file);
         fileDAO.createFile(serverFile);
-
     }
 
     @Override
-    public java.io.File fileDownload(String fileName, LogInDetails lid) throws FileError, UserError {
+    public File fileDownload(String fileName, LogInDetails lid) throws FileError, UserError {
         if(!lid.getUsername().equals(user.getUsername()))
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         return fileDAO.getFile(fileName, user);
@@ -87,11 +88,10 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
         fileDAO.togglePrivate(fileName, user);
     }
 
-    private void startRegistry() throws RemoteException {
-        try {
-            LocateRegistry.getRegistry().list();
-        } catch (RemoteException noRegistryIsRunning) {
-            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
-        }
+    public void listFiles(LogInDetails lid) throws UserError, RemoteException {
+        if(!lid.getUsername().equals(user.getUsername()))
+            throw new UserError("Username mismatch, something went wrong with session please re-login.");
+        List<File>  lst = fileDAO.listFiles(user);
+        remoteObject.recvMsg(lst.toString());
     }
 }
