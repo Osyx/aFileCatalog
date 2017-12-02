@@ -128,7 +128,7 @@ public class FileDAO {
                     return null;
                 }
             } finally {
-                commitTransaction();
+               // commitTransaction();
             }
         }
         try {
@@ -136,13 +136,13 @@ public class FileDAO {
             try {
                 TypedQuery files = em.createNamedQuery("findAllFilesAvailable", File.class);
                 files.setParameter("username", user.getUsername());
-                files.setParameter("password", user.getPassword());
+                //files.setParameter("password", user.getPassword());
                 return files.getResultList();
             } catch (NoResultException noSuchAccount) {
                 return null;
             }
         } finally {
-            commitTransaction();
+           // commitTransaction();
         }
     }
 
