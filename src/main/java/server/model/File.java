@@ -9,15 +9,15 @@ import javax.persistence.*;
                 name = "deleteFile",
                 query = "DELETE FROM files file " +
                         "WHERE file.name LIKE :fileName " +
-                        "AND file.owner.username LIKE :username " +
-                        "AND file.owner.password LIKE :password"
+                        "AND file.owner LIKE :username "/* +
+                        "AND file.owner.password LIKE :password"*/
         )
         ,
         @NamedQuery(
                 name = "findOwnedFiles",
                 query = "SELECT file FROM files file " +
-                        "WHERE file.owner.username LIKE :username " +
-                        "AND file.owner.password LIKE :password",
+                        "WHERE file.owner LIKE :username "/* +
+                        "AND file.owner.password LIKE :password"*/,
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
@@ -25,8 +25,8 @@ import javax.persistence.*;
                 name = "findAllFilesAvailable",
                 query = "SELECT file FROM files file " +
                         "WHERE (file.privateAccess = FALSE " +
-                        "OR (file.owner.username LIKE :username " +
-                        "AND file.owner.password LIKE :password))",
+                        "OR (file.owner LIKE :username)) " /*+
+                        "AND file.owner.password LIKE :password))"*/,
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
@@ -41,8 +41,8 @@ import javax.persistence.*;
                 name = "retrieveFile",
                 query = "SELECT file.content FROM files file " +
                         "WHERE file.name = :fileName " +
-                        "AND file.owner.username = :username " +
-                        "AND file.owner.password = :password ",
+                        "AND file.owner = :username " /*+
+                        "AND file.owner.password = :password "*/,
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
@@ -50,8 +50,8 @@ import javax.persistence.*;
                 name = "updateFile",
                 query = "UPDATE files file SET file.content = :file " +
                         "WHERE file.name = :fileName " +
-                        "AND file.owner.username = :username " +
-                        "AND file.owner.password = :password " +
+                        "AND file.owner = :username " /*+
+                        "AND file.owner.password = :password "*/ +
                         "AND file.writePermission <> FALSE"
         )
         ,
@@ -60,8 +60,8 @@ import javax.persistence.*;
                 query = "UPDATE files file SET file.privateAccess = " +
                         "CASE file.privateAccess WHEN TRUE THEN FALSE WHEN FALSE THEN TRUE ELSE file.privateAccess END " +
                         "WHERE file.name = :fileName " +
-                        "AND file.owner.username = :username " +
-                        "AND file.owner.password = :password "
+                        "AND file.owner = :username "/* +
+                        "AND file.owner.password = :password "*/
         )
 })
 
@@ -74,9 +74,8 @@ public class File implements FileDTO {
     @Column(name = "size", nullable = false)
     private long fileSize;
 
-    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner", nullable = false)
-    private User owner;
+    private String owner;
 
     @Column(name = "privateAccess", nullable = false)
     private boolean privateAccess;
@@ -96,7 +95,7 @@ public class File implements FileDTO {
     public File(String name, User user, java.io.File content) {
         this.name = name;
         this.fileSize = content.length();
-        this.owner = user;
+        this.owner = user.getUsername();
         this.privateAccess = true;
         this.writePermission = true;
         this.content = content;
@@ -105,7 +104,7 @@ public class File implements FileDTO {
     public File(String name, User user, boolean privateAccess, boolean writePermission, java.io.File content) {
         this.name = name;
         this.fileSize = content.length();
-        this.owner = user;
+        this.owner = user.getUsername();
         this.privateAccess = privateAccess;
         this.writePermission = writePermission;
         this.content = content;
@@ -119,7 +118,7 @@ public class File implements FileDTO {
         return fileSize;
     }
 
-    public User getOwner() {
+    public String getOwner() {
         return owner;
     }
 

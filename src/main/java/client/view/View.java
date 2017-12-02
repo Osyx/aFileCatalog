@@ -155,8 +155,10 @@ public class View implements Runnable{
                 e.printStackTrace();
             } catch (UserError userError) {
                 System.out.println(userError.getErrorMsg());
+                userError.getException().printStackTrace();
             } catch (FileError fileError) {
                 System.out.println(fileError.getErrorMsg());
+                fileError.getException().printStackTrace();
             }
         }
     }

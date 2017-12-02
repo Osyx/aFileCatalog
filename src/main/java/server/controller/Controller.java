@@ -46,7 +46,7 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
 
     @Override
     public void fileUpload(java.io.File file, LogInDetails lid) throws FileError, UserError {
-        if(!lid.getUsername().equals(user.getUsername()))
+        if(!lid.getUsername().equals(user.getUsername()) || user == null)
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         File serverFile = new File(file.getName(), user, file);
         fileDAO.createFile(serverFile);
@@ -54,11 +54,10 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
 
     @Override
     public void fileUpload(java.io.File file, boolean privateAccess, boolean writePermission, LogInDetails lid) throws FileError, UserError {
-        if(!lid.getUsername().equals(user.getUsername()))
+        if(!lid.getUsername().equals(user.getUsername()) || user == null)
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         File serverFile = new File(file.getName(), user, privateAccess, writePermission, file);
         fileDAO.createFile(serverFile);
-
     }
 
     @Override
