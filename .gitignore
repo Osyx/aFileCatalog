@@ -11,23 +11,7 @@
 
 \.idea/encodings\.xml
 
-\.idea/libraries/Maven__mysql_mysql_connector_java_6_0_6\.xml
-
-\.idea/libraries/Maven__org_apache_derby_derbyclient_10_13_1_1\.xml
-
-\.idea/libraries/Maven__org_eclipse_persistence_javax_persistence_2_2_0\.xml
-
-\.idea/libraries/Maven__org_eclipse_persistence_org_eclipse_persistence_antlr_2_7_0\.xml
-
-\.idea/libraries/Maven__org_eclipse_persistence_org_eclipse_persistence_asm_2_7_0\.xml
-
-\.idea/libraries/Maven__org_eclipse_persistence_org_eclipse_persistence_core_2_7_0\.xml
-
-\.idea/libraries/Maven__org_eclipse_persistence_org_eclipse_persistence_jpa_2_7_0\.xml
-
-\.idea/libraries/Maven__org_eclipse_persistence_org_eclipse_persistence_jpa_jpql_2_7_0\.xml
-
-\.idea/libraries/Maven__org_glassfish_javax_json_1_0_4\.xml
+\.idea/libraries/*
 
 \.idea/misc\.xml
 
@@ -37,32 +21,6 @@
 
 \.idea/workspace\.xml
 
-target/classes/client/startup/Startup\.class
+*.class
 
-target/classes/client/view/View\.class
-
-target/classes/client/view/View\$Output\.class
-
-target/classes/common/ClientReacher\.class
-
-target/classes/common/FileDTO\.class
-
-target/classes/common/FileError\.class
-
-target/classes/common/LogInDetails\.class
-
-target/classes/common/ServerReacher\.class
-
-target/classes/common/UserError\.class
-
-target/classes/META-INF/persistence\.xml
-
-target/classes/server/controller/Controller\.class
-
-target/classes/server/integration/FileDAO\.class
-
-target/classes/server/model/File\.class
-
-target/classes/server/model/User\.class
-
-target/classes/server/startup/Main\.class
+target/*

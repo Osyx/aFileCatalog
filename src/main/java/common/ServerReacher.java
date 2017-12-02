@@ -2,8 +2,9 @@ package common;
 
 
 import java.io.File;
+import java.rmi.Remote;
 
-public interface ServerReacher {
+public interface ServerReacher extends Remote {
     String NAME_OF_SERVER = "FileServer";
 
     void logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError;
