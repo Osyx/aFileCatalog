@@ -192,7 +192,7 @@ public class View implements Runnable{
     }
 
     private void printTabbed(Path path) {
-        System.out.println("\t" + path);
+        System.out.println("\t" + path.getFileName());
     }
 }
 
