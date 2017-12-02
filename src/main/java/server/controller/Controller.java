@@ -19,7 +19,7 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     public Controller() throws RemoteException {}
 
     @Override
-    public String logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError {
+    public String logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError, RemoteException {
         this.remoteObject = remoteObject;
         this.user = fileDAO.checkLogin(lid);
         return user.getUsername();
