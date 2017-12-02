@@ -15,6 +15,7 @@ class Main {
             Naming.rebind(Controller.NAME_OF_SERVER, new Controller());
             System.out.println("Server is a go");
         } catch (MalformedURLException | RemoteException e) {
+            e.printStackTrace();
             System.out.println("Unable to start server");
         }
     }

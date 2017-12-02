@@ -48,19 +48,14 @@ public class View implements Runnable{
     public void run(){
         Scanner sc = new Scanner(System.in);
         System.out.println("Host?");
-        try{
-            lookupServer(sc.next());
-        }catch (NotBoundException nbe){
-            System.out.println("Not bound.");
-        }catch (MalformedURLException mue){
-            System.out.println("Malformed URL.");
-        }catch(RemoteException re){
-            System.out.println("Remote error.");
-        }
-        System.out.println("receiving commands...");
+        lookupServer(sc.next());
+        System.out.println("receiving commands...\nNow ready for input, for help write: " + HELP_MESSAGE);
+        String username;
         while(receiving){
             try{
                 String input = sc.nextLine().toLowerCase();
+                if(input.isEmpty())
+                    continue;
                 switch (input) {
                     case HELP_MESSAGE:
                         System.out.println("Possible commands: " + HELP_MESSAGE + ", " + EXIT_MESSAGE + ", " + LOGIN_MESSAGE + ", " + LOGOUT_MESSAGE + ", " + REGISTER_MESSAGE + ", " + UNREGISTER_MESSAGE + ", " + UPLOAD_MESSAGE + ", " + DOWNLOAD_MESSAGE + ", " + LIST_MESSAGE + ", " + DELETE_MESSAGE + ", " + UPDATE_MESSAGE + ", " + NOTIFY_MESSAGE + " ");
@@ -72,9 +67,9 @@ public class View implements Runnable{
                     case LOGIN_MESSAGE:
                         System.out.println("Insert username and password.");
                         LogInDetails lid = new LogInDetails(sc.next(), sc.next());
-                        server.logIn(remoteObject, lid);
+                        username = server.logIn(remoteObject, lid);
                         userLID = lid;
-                        System.out.println("Logged in as " + userLID.getUsername());
+                        System.out.println("Logged in as " + username);
                         break;
                     case LOGOUT_MESSAGE:
                         if(userLID == null){
@@ -90,9 +85,9 @@ public class View implements Runnable{
                         try{
                             System.out.println("Insert wanted username and password.");
                             LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
-                            server.register(lidR);
+                            username = server.register(lidR);
                             userLID = lidR;
-                            System.out.println("Logged in as " + userLID);
+                            System.out.println("Logged in as " + username);
                         }catch(UserError ue){
                             System.out.println("Username already taken");
                         }
@@ -148,7 +143,8 @@ public class View implements Runnable{
                         System.out.println("Notification enabled");
                         break;
                     default:
-                        //System.out.println("Wrong message syntax: " + input + ". Type help for help.");
+                        System.out.println("Wrong message syntax: " + input + ". Type help for help.");
+                        break;
                 }
 
             }catch (Exception e){
@@ -165,13 +161,16 @@ public class View implements Runnable{
         }
         @Override
         public void recvMsg(String message) {
-
+            System.out.println(message);
         }
     }
 
-    private void lookupServer(String host) throws NotBoundException, MalformedURLException,
-            RemoteException {
-                server = (ServerReacher) Naming.lookup("//" + host + "/" + ServerReacher.NAME_OF_SERVER);
+    private void lookupServer(String host) /*throws NotBoundException, MalformedURLException, RemoteException */{
+        try {
+            server = (ServerReacher) Naming.lookup("//" + host + "/" + ServerReacher.NAME_OF_SERVER);
+        } catch (NotBoundException | MalformedURLException | RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
 

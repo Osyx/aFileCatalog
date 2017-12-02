@@ -19,9 +19,10 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     public Controller() throws RemoteException {}
 
     @Override
-    public void logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError {
+    public String logIn(ClientReacher remoteObject, LogInDetails lid ) throws UserError {
         this.remoteObject = remoteObject;
         this.user = fileDAO.checkLogin(lid);
+        return user.getUsername();
     }
 
     @Override
@@ -31,8 +32,9 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     }
 
     @Override
-    public void register(LogInDetails lgn) throws UserError {
+    public String register(LogInDetails lgn) throws UserError {
         user = fileDAO.createUser(lgn);
+        return user.getUsername();
     }
 
     @Override
@@ -71,12 +73,14 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
 
     }
 
+    @Override
     public void deleteFile(String fileName, LogInDetails lid) throws FileError, UserError {
         if(!lid.getUsername().equals(user.getUsername()))
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         fileDAO.deleteFile(user, fileName);
     }
 
+    @Override
     public void togglePrivate(String fileName, LogInDetails lid) throws UserError, FileError {
         if(!lid.getUsername().equals(user.getUsername()))
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
