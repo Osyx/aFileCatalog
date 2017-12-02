@@ -38,7 +38,7 @@ public class FileDAO {
             em.persist(file);
             commitTransaction();
         }catch (Exception e){
-            throw new FileError("Error creating file...");
+            throw new FileError("Error creating file...", e);
         }
     }
 
@@ -93,7 +93,7 @@ public class FileDAO {
                 query.setParameter("password", logInDetails.getPassword());
                 user = (User) query.getSingleResult();
             } catch (NoResultException noSuchAccount) {
-                throw new UserError("Wrong login details!");
+                throw new UserError("Wrong login details!", noSuchAccount);
             }
         } finally {
             commitTransaction();
@@ -111,7 +111,7 @@ public class FileDAO {
                 query.setParameter("password", user.getPassword());
                 query.executeUpdate();
             } catch (NoResultException noSuchAccount) {
-                throw new FileError("Couldn't toggle private permission, maybe " + user.getUsername() + " doesn't have access to this file or the file might not exist.");
+                throw new FileError("Couldn't toggle private permission, maybe " + user.getUsername() + " doesn't have access to this file or the file might not exist.", noSuchAccount);
             }
         } finally {
             commitTransaction();
@@ -155,7 +155,7 @@ public class FileDAO {
                 files.setParameter("password", user.getPassword());
                 return (java.io.File) files.getSingleResult();
             } catch (NoResultException noSuchAccount) {
-                throw new FileError("Either server can't find file or user does not have permission to retrieve it.");
+                throw new FileError("Either server can't find file or user does not have permission to retrieve it.", noSuchAccount);
             }
         } finally {
             commitTransaction();
