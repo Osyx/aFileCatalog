@@ -137,9 +137,9 @@ public class View implements Runnable{
                     case UPDATE_MESSAGE:
                         System.out.println("Enter file to update");
                         String update = sc.next();
-                        File updatefile = new File(update);
+                        File updateFile = new File(update);
                         server.deleteFile(update, userLID);
-                        server.fileUpload(updatefile, userLID);
+                        server.fileUpload(updateFile, userLID);
                         System.out.println("File updated");
                         break;
                     case NOTIFY_MESSAGE:

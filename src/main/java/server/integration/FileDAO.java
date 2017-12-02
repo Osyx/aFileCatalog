@@ -28,8 +28,12 @@ public class FileDAO {
         return em;
     }
 
-    private void commitTransaction() {
-        entityManagerThreadLocal.get().getTransaction().commit();
+    private void commitTransaction() throws FileError {
+        try {
+            entityManagerThreadLocal.get().getTransaction().commit();
+        } catch(RollbackException e) {
+            throw new FileError("File probably already exists", e);
+        }
     }
 
     public void createFile(FileDTO file) throws FileError {
@@ -58,7 +62,7 @@ public class FileDAO {
         }
     }
 
-    public User createUser(LogInDetails logInDetails) throws UserError {
+    public User createUser(LogInDetails logInDetails) throws UserError, FileError {
         User user;
             if(searchUser(logInDetails.getUsername()) != null)
                 throw new UserError("Account already exists...");
@@ -69,7 +73,7 @@ public class FileDAO {
         return user;
     }
 
-    public void deleteUser(User user) {
+    public void deleteUser(User user) throws FileError {
         try {
             EntityManager em = beginTransaction();
             TypedQuery query = em.createNamedQuery("deleteUser", User.class);
@@ -82,7 +86,7 @@ public class FileDAO {
         }
     }
 
-    public User checkLogin(LogInDetails logInDetails) throws UserError {
+    public User checkLogin(LogInDetails logInDetails) throws UserError, FileError {
         User user;
         try {
             EntityManager em = beginTransaction();
@@ -161,7 +165,7 @@ public class FileDAO {
 
     }
 
-    private User searchUser(String username) throws UserError {
+    private User searchUser(String username) throws UserError, FileError {
         if (username == null) {
             throw new UserError("No username entered...");
         }
