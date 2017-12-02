@@ -39,7 +39,7 @@ import javax.persistence.*;
         ,
         @NamedQuery(
                 name = "retrieveFile",
-                query = "SELECT file.content FROM files file " +
+                query = "SELECT file FROM files file " +
                         "WHERE file.name = :fileName " +
                         "AND file.owner = :username " /*+
                         "AND file.owner.password = :password "*/,

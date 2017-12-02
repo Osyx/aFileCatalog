@@ -122,8 +122,9 @@ public class View implements Runnable{
                         break;
                     case DOWNLOAD_MESSAGE:
                         System.out.println("Enter file to download");
-                        File downloadedFile = server.fileDownload(sc.next(), userLID);
-                        System.out.println("File \"" + downloadedFile.getName() + "\" downloaded to \"" + downloadedFile.getPath() + "\".");
+                        FileDTO downloadedFile = server.fileDownload(sc.next(), userLID);
+                        System.out.println(downloadedFile);
+                        System.out.println("File \"" + downloadedFile.getName() + "\".");
                         break;
                     case LIST_MESSAGE:
                         server.listFiles(userLID);

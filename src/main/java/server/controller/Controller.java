@@ -63,7 +63,7 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     }
 
     @Override
-    public java.io.File fileDownload(String fileName, LogInDetails lid) throws FileError, UserError {
+    public File fileDownload(String fileName, LogInDetails lid) throws FileError, UserError {
         if(!lid.getUsername().equals(user.getUsername()))
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         return fileDAO.getFile(fileName, user);

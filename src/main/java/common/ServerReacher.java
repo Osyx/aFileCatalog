@@ -28,7 +28,7 @@ public interface ServerReacher extends Remote {
 
     void togglePrivate(String fileName, LogInDetails lid) throws UserError, FileError, RemoteException;
 
-    File fileDownload(String fileName, LogInDetails lid ) throws UserError, FileError, RemoteException;
+    FileDTO fileDownload(String fileName, LogInDetails lid ) throws UserError, FileError, RemoteException;
 
     void listFiles(LogInDetails lgn) throws UserError, RemoteException;
 

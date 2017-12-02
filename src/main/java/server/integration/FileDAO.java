@@ -145,14 +145,14 @@ public class FileDAO {
         }
     }
 
-    public java.io.File getFile(String fileName, User user) throws FileError {
+    public File getFile(String fileName, User user) throws FileError {
             EntityManager em = beginTransaction();
             try {
                 TypedQuery files = em.createNamedQuery("retrieveFile", File.class);
                 files.setParameter("username", user.getUsername());
                 files.setParameter("fileName", fileName);
                 //files.setParameter("password", user.getPassword());
-                return (java.io.File) files.getSingleResult();
+                return (File) files.getSingleResult();
             } catch (NoResultException noSuchAccount) {
                 throw new FileError("Either server can't find file or user does not have permission to retrieve it.", noSuchAccount);
             } finally {
