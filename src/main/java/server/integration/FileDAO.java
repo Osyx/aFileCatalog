@@ -48,7 +48,7 @@ public class FileDAO {
             TypedQuery delFile = em.createNamedQuery("deleteFile", File.class);
             delFile.setParameter("fileName", fileName);
             delFile.setParameter("username", user.getUsername());
-            delFile.setParameter("password", user.getPassword());
+            //delFile.setParameter("password", user.getPassword());
             delFile.executeUpdate();
 
             if(getFile(fileName, user) != null)
@@ -60,7 +60,6 @@ public class FileDAO {
 
     public User createUser(LogInDetails logInDetails) throws UserError {
         User user;
-
             if(searchUser(logInDetails.getUsername()) != null)
                 throw new UserError("Account already exists...");
             EntityManager em = beginTransaction();
@@ -108,7 +107,7 @@ public class FileDAO {
                 TypedQuery query = em.createNamedQuery("togglePrivate", User.class);
                 query.setParameter("fileName", fileName);
                 query.setParameter("username", user.getUsername());
-                query.setParameter("password", user.getPassword());
+                //query.setParameter("password", user.getPassword());
                 query.executeUpdate();
             } catch (NoResultException noSuchAccount) {
                 throw new FileError("Couldn't toggle private permission, maybe " + user.getUsername() + " doesn't have access to this file or the file might not exist.", noSuchAccount);
@@ -136,7 +135,7 @@ public class FileDAO {
             try {
                 TypedQuery files = em.createNamedQuery("findAllFilesAvailable", File.class);
                 files.setParameter("username", user.getUsername());
-                files.setParameter("password", user.getPassword());
+                //files.setParameter("password", user.getPassword());
                 return files.getResultList();
             } catch (NoResultException noSuchAccount) {
                 return null;
@@ -147,19 +146,19 @@ public class FileDAO {
     }
 
     public java.io.File getFile(String fileName, User user) throws FileError {
-        try {
             EntityManager em = beginTransaction();
             try {
                 TypedQuery files = em.createNamedQuery("retrieveFile", File.class);
                 files.setParameter("username", user.getUsername());
-                files.setParameter("password", user.getPassword());
+                files.setParameter("fileName", fileName);
+                //files.setParameter("password", user.getPassword());
                 return (java.io.File) files.getSingleResult();
             } catch (NoResultException noSuchAccount) {
                 throw new FileError("Either server can't find file or user does not have permission to retrieve it.", noSuchAccount);
+            } finally {
+                commitTransaction();
             }
-        } finally {
-            commitTransaction();
-        }
+
     }
 
     private User searchUser(String username) throws UserError {
