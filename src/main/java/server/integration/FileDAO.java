@@ -127,7 +127,7 @@ public class FileDAO {
                     return null;
                 }
             } finally {
-                commitTransaction();
+               // commitTransaction();
             }
         }
         try {
@@ -141,7 +141,7 @@ public class FileDAO {
                 return null;
             }
         } finally {
-            commitTransaction();
+           // commitTransaction();
         }
     }
 

@@ -1,6 +1,8 @@
 package common;
 
 
+import server.model.User;
+
 import java.io.File;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -12,7 +14,7 @@ public interface ServerReacher extends Remote {
 
     void logOut(LogInDetails lid ) throws RemoteException;
 
-    String register(LogInDetails lgn) throws UserError, RemoteException;
+    String register(LogInDetails lgn , ClientReacher cr) throws UserError, RemoteException;
 
     void unRegister(LogInDetails lid ) throws UserError, RemoteException;
 
@@ -27,5 +29,7 @@ public interface ServerReacher extends Remote {
     void togglePrivate(String fileName, LogInDetails lid) throws UserError, FileError, RemoteException;
 
     File fileDownload(String fileName, LogInDetails lid ) throws UserError, FileError, RemoteException;
+
+    void listFiles(LogInDetails lgn) throws UserError, RemoteException;
 
 }

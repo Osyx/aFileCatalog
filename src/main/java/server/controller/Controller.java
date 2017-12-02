@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 
 public class Controller extends UnicastRemoteObject implements ServerReacher {
 
@@ -32,7 +33,8 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
     }
 
     @Override
-    public String register(LogInDetails lgn) throws UserError {
+    public String register(LogInDetails lgn, ClientReacher cr) throws UserError {
+        this.remoteObject = cr;
         user = fileDAO.createUser(lgn);
         return user.getUsername();
     }
@@ -84,6 +86,13 @@ public class Controller extends UnicastRemoteObject implements ServerReacher {
         if(!lid.getUsername().equals(user.getUsername()))
             throw new UserError("Username mismatch, something went wrong with session please re-login.");
         fileDAO.togglePrivate(fileName, user);
+    }
+
+    public void listFiles(LogInDetails lid) throws UserError, RemoteException {
+        if(!lid.getUsername().equals(user.getUsername()))
+            throw new UserError("Username mismatch, something went wrong with session please re-login.");
+        List<File>  lst = fileDAO.listFiles(user);
+        remoteObject.recvMsg(lst.toString());
     }
 
     private void startRegistry() throws RemoteException {

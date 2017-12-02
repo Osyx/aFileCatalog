@@ -87,7 +87,7 @@ public class View implements Runnable{
                         try{
                             System.out.println("Insert wanted username and password.");
                             LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
-                            username = server.register(lidR);
+                            username = server.register(lidR, remoteObject);
                             userLID = lidR;
                             System.out.println("Logged in as " + username);
                         }catch(UserError ue){
@@ -126,7 +126,7 @@ public class View implements Runnable{
                         System.out.println("File \"" + downloadedFile.getName() + "\" downloaded to \"" + downloadedFile.getPath() + "\".");
                         break;
                     case LIST_MESSAGE:
-                        System.out.println("LIST MESSAGE...");
+                        server.listFiles(userLID);
                         break;
                     case DELETE_MESSAGE:
                         System.out.println("Enter file to delete");
