@@ -41,7 +41,8 @@ import javax.persistence.*;
                 name = "retrieveFile",
                 query = "SELECT file FROM files file " +
                         "WHERE file.name = :fileName " +
-                        "AND file.owner = :username " /*+
+                        "AND file.owner = :username " +
+                        "OR file.privateAccess = FALSE" /*+
                         "AND file.owner.password = :password "*/,
                 lockMode = LockModeType.OPTIMISTIC
         )
