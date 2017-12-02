@@ -87,7 +87,7 @@ public class View implements Runnable{
                         try{
                             System.out.println("Insert wanted username and password.");
                             LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
-                            username = server.register(lidR);
+                            username = server.register(lidR, remoteObject);
                             userLID = lidR;
                             System.out.println("Logged in as " + username);
                         }catch(UserError ue){
@@ -122,11 +122,12 @@ public class View implements Runnable{
                         break;
                     case DOWNLOAD_MESSAGE:
                         System.out.println("Enter file to download");
-                        File downloadedFile = server.fileDownload(sc.next(), userLID);
-                        System.out.println("File \"" + downloadedFile.getName() + "\" downloaded to \"" + downloadedFile.getPath() + "\".");
+                        FileDTO downloadedFile = server.fileDownload(sc.next(), userLID);
+                        System.out.println(downloadedFile);
+                        System.out.println("File \"" + downloadedFile.getName() + "\".");
                         break;
                     case LIST_MESSAGE:
-                        System.out.println("LIST MESSAGE...");
+                        server.listFiles(userLID);
                         break;
                     case DELETE_MESSAGE:
                         System.out.println("Enter file to delete");
@@ -136,9 +137,9 @@ public class View implements Runnable{
                     case UPDATE_MESSAGE:
                         System.out.println("Enter file to update");
                         String update = sc.next();
-                        File updatefile = new File(update);
+                        File updateFile = new File(update);
                         server.deleteFile(update, userLID);
-                        server.fileUpload(updatefile, userLID);
+                        server.fileUpload(updateFile, userLID);
                         System.out.println("File updated");
                         break;
                     case NOTIFY_MESSAGE:
@@ -155,8 +156,10 @@ public class View implements Runnable{
                 e.printStackTrace();
             } catch (UserError userError) {
                 System.out.println(userError.getErrorMsg());
+                userError.getException().printStackTrace();
             } catch (FileError fileError) {
                 System.out.println(fileError.getErrorMsg());
+                fileError.getException().printStackTrace();
             }
         }
     }
