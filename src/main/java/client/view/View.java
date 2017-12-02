@@ -166,7 +166,7 @@ public class View implements Runnable{
 
 
     private class Output extends UnicastRemoteObject implements ClientReacher{
-        Output() throws RemoteException{
+        public Output() throws RemoteException{
 
         }
         @Override
