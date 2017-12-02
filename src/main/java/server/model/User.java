@@ -1,25 +1,30 @@
 package server.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 
 
 
 @NamedQueries({
         @NamedQuery(
                 name = "deleteUser",
-                query = "DELETE FROM users user WHERE user.username LIKE :username AND user.password LIKE :password"
+                query = "DELETE FROM users user " +
+                        "WHERE user.username LIKE :username " +
+                        "AND user.password LIKE :password"
         )
         ,
         @NamedQuery(
                 name = "checkUser",
-                query = "SELECT user FROM users user WHERE user.username LIKE :username",
+                query = "SELECT user FROM users user " +
+                        "WHERE user.username LIKE :username",
                 lockMode = LockModeType.OPTIMISTIC
         )
         ,
         @NamedQuery(
                 name = "loginUser",
-                query = "SELECT user FROM users user WHERE user.username LIKE :username AND user.password LIKE :password",
+                query = "SELECT user FROM users user " +
+                        "WHERE user.username LIKE :username " +
+                        "AND user.password LIKE :password",
                 lockMode = LockModeType.OPTIMISTIC
         )
 })
@@ -33,6 +38,10 @@ public class User implements Serializable{
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Version
+    @Column(name = "version")
+    private int versionNum;
 
     public User() {}
 

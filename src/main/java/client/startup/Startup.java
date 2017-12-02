@@ -1,9 +1,10 @@
 package client.startup;
 
-import java.rmi.RemoteException;
 import client.view.View;
 
-public class Startup {
+import java.rmi.RemoteException;
+
+class Startup {
     public static void main(String[] args) {
         try {
             System.out.print("creating new view...");

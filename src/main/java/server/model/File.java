@@ -28,23 +28,40 @@ import javax.persistence.*;
                         "OR (file.owner.username LIKE :username " +
                         "AND file.owner.password LIKE :password))",
                 lockMode = LockModeType.OPTIMISTIC
-        ),
-
+        )
+        ,
         @NamedQuery(
                 name = "freeFindAllFilesAvailable",
                 query = "SELECT file FROM files file " +
                         "WHERE file.privateAccess = FALSE",
                 lockMode = LockModeType.OPTIMISTIC
-        ),
-
+        )
+        ,
+        @NamedQuery(
+                name = "retrieveFile",
+                query = "SELECT file.content FROM files file " +
+                        "WHERE file.name = :fileName " +
+                        "AND file.owner.username = :username " +
+                        "AND file.owner.password = :password ",
+                lockMode = LockModeType.OPTIMISTIC
+        )
+        ,
         @NamedQuery(
                 name = "updateFile",
                 query = "UPDATE files file SET file.content = :file " +
                         "WHERE file.name = :fileName " +
                         "AND file.owner.username = :username " +
                         "AND file.owner.password = :password " +
-                        "AND file.writePermission <> FALSE",
-                lockMode = LockModeType.OPTIMISTIC
+                        "AND file.writePermission <> FALSE"
+        )
+        ,
+        @NamedQuery(
+                name = "togglePrivate",
+                query = "UPDATE files file SET file.privateAccess = " +
+                        "CASE file.privateAccess WHEN TRUE THEN FALSE WHEN FALSE THEN TRUE ELSE file.privateAccess END " +
+                        "WHERE file.name = :fileName " +
+                        "AND file.owner.username = :username " +
+                        "AND file.owner.password = :password "
         )
 })
 
@@ -69,6 +86,10 @@ public class File implements FileDTO {
 
     @Column(name = "content", nullable = false)
     private java.io.File content;
+
+    @Version
+    @Column(name = "version")
+    private int versionNum;
 
     public File() {}
 

@@ -1,7 +1,7 @@
 package common;
 
 public class UserError extends Exception {
-    private String errorMsg;
+    private final String errorMsg;
 
     public UserError(String errorMsg) {
         this.errorMsg = errorMsg;

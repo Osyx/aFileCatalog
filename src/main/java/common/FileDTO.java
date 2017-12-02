@@ -1,8 +1,8 @@
 package common;
 
-import java.io.Serializable;
-import server.model.File;
 import server.model.User;
+
+import java.io.Serializable;
 
 /**
  * Specifies a read-only view of n account.

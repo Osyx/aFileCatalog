@@ -1,5 +1,10 @@
 package client.view;
 
+import common.ClientReacher;
+import common.LogInDetails;
+import common.ServerReacher;
+import common.UserError;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -7,12 +12,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
-
-import com.sun.org.apache.xpath.internal.SourceTree;
-import common.ClientReacher;
-import common.LogInDetails;
-import common.ServerReacher;
-import common.UserError;
 
 public class View implements Runnable{
     private ServerReacher server;
@@ -91,7 +90,7 @@ public class View implements Runnable{
                         try{
                             System.out.println("Insert wanted username and password.");
                             LogInDetails lidR = new LogInDetails(sc.next(), sc.next());
-                            server.register(remoteObject, lidR);
+                            server.register(lidR);
                             userLID = lidR;
                             System.out.println("Logged in as " + userLID);
                         }catch(UserError ue){
@@ -117,15 +116,15 @@ public class View implements Runnable{
                         server.fileUpload(file, userLID);
                         System.out.println("Do you want the file to be public?");
                         if(sc.next().equals("yes")){
-                            server.setPrivate(false, userLID);
+                            server.togglePrivate(file.getName(), userLID);
                         }
                         System.out.println("File uploaded");
 
                         break;
                     case DOWNLOAD_MESSAGE:
                         System.out.println("Enter file to download");
-                        server.fileDownload(sc.next(), userLID);
-                        System.out.println("File downloaded");
+                        File downloadedFile = server.fileDownload(sc.next(), userLID);
+                        System.out.println("File \"" + downloadedFile.getName() + "\" downloaded to \"" + downloadedFile.getPath() + "\".");
                         break;
                     case LIST_MESSAGE:
                         System.out.println("LIST MESSAGE...");
@@ -161,7 +160,7 @@ public class View implements Runnable{
 
 
     private class Output extends UnicastRemoteObject implements ClientReacher{
-        public Output() throws RemoteException{
+        Output() throws RemoteException{
 
         }
         @Override

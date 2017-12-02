@@ -1,7 +1,7 @@
 package common;
 
 public class FileError extends Exception{
-    private String errorMsg;
+    private final String errorMsg;
 
     public FileError(String errorMsg) {
         this.errorMsg = errorMsg;

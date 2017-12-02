@@ -1,13 +1,14 @@
 package server.startup;
 
+import server.controller.Controller;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import server.controller.Controller;
 
-public class Main {
+class Main {
     public static void main(String[] args) {
         try {
             new Main().startRegistry();

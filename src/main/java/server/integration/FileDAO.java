@@ -15,7 +15,7 @@ public class FileDAO {
     private final ThreadLocal<EntityManager> entityManagerThreadLocal = new ThreadLocal<>();
 
     public FileDAO() {
-        factory = Persistence.createEntityManagerFactory("filePersistenceUnit");
+        factory = Persistence.createEntityManagerFactory("factory");
     }
 
     private EntityManager beginTransaction() {
@@ -43,7 +43,7 @@ public class FileDAO {
         }
     }
 
-    public void deleteFile(User user, String fileName) {
+    public void deleteFile(User user, String fileName) throws FileError {
         try {
             EntityManager em = beginTransaction();
             TypedQuery delFile = em.createNamedQuery("deleteFile", File.class);
@@ -51,20 +51,26 @@ public class FileDAO {
             delFile.setParameter("username", user.getUsername());
             delFile.setParameter("password", user.getPassword());
             delFile.executeUpdate();
+
+            if(getFile(fileName, user) != null)
+                throw new FileError("Something went wrong during delete, file still exists...");
         } finally {
             commitTransaction();
         }
     }
 
-    public void createUser(User user) throws UserError {
+    public User createUser(LogInDetails logInDetails) throws UserError {
+        User user;
         try {
-            if(searchUser(user.getUsername()) != null)
+            if(searchUser(logInDetails.getUsername()) != null)
                 throw new UserError("Account already exists...");
             EntityManager em = beginTransaction();
-            em.persist(new User(user.getUsername(), user.getPassword()));
+            user = new User(logInDetails.getUsername(), logInDetails.getPassword());
+            em.persist(user);
         } finally {
             commitTransaction();
         }
+        return user;
     }
 
     public void deleteUser(User user) {
@@ -98,7 +104,24 @@ public class FileDAO {
         return user;
     }
 
-    public List<File> listFiles(User user) {
+    public void togglePrivate(String fileName, User user) throws FileError {
+        try {
+            EntityManager em = beginTransaction();
+            try {
+                TypedQuery query = em.createNamedQuery("togglePrivate", User.class);
+                query.setParameter("fileName", fileName);
+                query.setParameter("username", user.getUsername());
+                query.setParameter("password", user.getPassword());
+                query.executeUpdate();
+            } catch (NoResultException noSuchAccount) {
+                throw new FileError("Couldn't toggle private permission, maybe " + user.getUsername() + " doesn't have access to this file or the file might not exist.");
+            }
+        } finally {
+            commitTransaction();
+        }
+    }
+
+    public List listFiles(User user) {
         if(user == null){
             try {
                 EntityManager em = beginTransaction();
@@ -117,10 +140,25 @@ public class FileDAO {
                 TypedQuery files = em.createNamedQuery("findAllFilesAvailable", File.class);
                 files.setParameter("username", user.getUsername());
                 files.setParameter("password", user.getPassword());
-                List<File> listofFiles = (List<File>) files.getResultList();
-                return listofFiles;
+                return files.getResultList();
             } catch (NoResultException noSuchAccount) {
                 return null;
+            }
+        } finally {
+            commitTransaction();
+        }
+    }
+
+    public java.io.File getFile(String fileName, User user) throws FileError {
+        try {
+            EntityManager em = beginTransaction();
+            try {
+                TypedQuery files = em.createNamedQuery("retrieveFile", File.class);
+                files.setParameter("username", user.getUsername());
+                files.setParameter("password", user.getPassword());
+                return (java.io.File) files.getSingleResult();
+            } catch (NoResultException noSuchAccount) {
+                throw new FileError("Either server can't find file or user does not have permission to retrieve it.");
             }
         } finally {
             commitTransaction();
